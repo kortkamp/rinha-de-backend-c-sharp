@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Rinha.Data.Repositories;
-using Rinha.Dtos;
 using Rinha.Entities;
 
 namespace Rinha.Controllers;
