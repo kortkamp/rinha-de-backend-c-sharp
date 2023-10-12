@@ -8,11 +8,11 @@ namespace Rinha.Data.Redis
     public class RedisService : IRedisService
     {
         private readonly IDatabase _db;
-        public RedisService()
+        public RedisService(IDatabase cache)
         {
-            _db = ConnectionMultiplexer.Connect("localhost,password=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81").GetDatabase();
+            _db = cache;
         }
-        public Pessoa? GetData(Guid id)
+        public Pessoa? _GetData(Guid id)
         {
             var key = id.ToString();
 
@@ -24,7 +24,7 @@ namespace Rinha.Data.Redis
             };
             return null;
         }
-        public bool SetData(Pessoa pessoa)
+        public bool _SetData(Pessoa pessoa)
         {
             var isSet = _db.StringSet(pessoa.Id.ToString(), JsonSerializer.Serialize(pessoa));
             return isSet;
@@ -38,6 +38,17 @@ namespace Rinha.Data.Redis
                 return _db.KeyDelete(key);
             }
             return false;
+        }
+
+        public string? GetData(string key)
+        {
+            var value = _db.StringGet(key);
+            return value;
+        }
+
+        public bool SetData(string key, string value)
+        {
+            return _db.StringSet(key, value);
         }
     }
 }

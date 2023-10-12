@@ -5,10 +5,9 @@ namespace Rinha.Data.Redis
     public interface IRedisService
     {
 
-        Pessoa? GetData(Guid id);
+        string? GetData(string id);
 
-        bool SetData(Pessoa pessoa);
+        bool SetData(string key, string value);
 
-        object RemoveData(Guid id);
     }
 }
