@@ -1,0 +1,97 @@
+version: '3.7'
+services:
+  # api1: # API - Instância 01
+  #   image: rinhanode
+  #   environment:
+  #     - PORT=5000
+  #   hostname: api1
+  #   depends_on:
+  #     - db
+  #   expose:
+  #     - "5000"
+  #   network_mode: "host"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.85'
+  #         memory: '0.5GB'
+  # api2: # API - Instância 01
+  #   image: rinhanode
+  #   environment:
+  #     - PORT=5001
+  #   hostname: api2
+  #   depends_on:
+  #     - db
+  #   expose:
+  #     - "5001"
+  #   network_mode: "host"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.85'
+  #         memory: '0.5GB'
+  db:
+    image: postgres
+    command: postgres -c config_file=/etc/postgresql.conf
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    # network_mode: "host"
+    volumes: 
+      - ./scripts/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./scripts/postgresql.conf:/etc/postgresql.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: '1.0GB'
+
+  # nginx: # Load Balancer
+  #   image: nginx:latest
+  #   volumes:
+  #     - ./scripts/nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - api1
+  #     - api2
+  #   ports:
+  #     - "9999:9999"
+  #   network_mode: "host"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.85'
+  #         memory: '0.5GB'
+  # gatling:
+  #   image: kortkamp/gatling-rinha:latest
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - baseUrl=http://localhost:9999
+  #     # - baseUrl=http://nginx:9999
+  #   volumes:
+  #     - ./gatling/results:/usr/src/gatling/user-files/results
+  #   network_mode: "host"
+  #   depends_on:
+  #     - nginx
+  redis:
+    image: redis
+    command: redis-server
+    ports:
+      - "6379:6379"
+    # network_mode: "host"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+networks:
+  default:
+    driver: bridge
+    name: rinha

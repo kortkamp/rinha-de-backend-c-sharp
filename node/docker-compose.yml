@@ -4,6 +4,7 @@ services:
     image: rinhanode
     environment:
       - PORT=5000
+      - DB_HOST=localhost
     hostname: api1
     depends_on:
       - db
@@ -19,6 +20,7 @@ services:
     image: rinhanode
     environment:
       - PORT=5001
+      - DB_HOST=localhost
     hostname: api2
     depends_on:
       - db
@@ -82,9 +84,10 @@ services:
       - nginx
   redis:
     image: redis
-    command: redis-server --requirepass Redis2019!
+    command: redis-server
     ports:
       - "6379:6379"
+    network_mode: "host"
     deploy:
       resources:
         limits:
